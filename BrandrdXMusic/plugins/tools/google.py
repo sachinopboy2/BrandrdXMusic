@@ -1,33 +1,33 @@
+
 import logging
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from BrandrdXMusic import app
-from SafoneAPI import SafoneAPI
+from duckduckgo_search import DDGS # Iske liye 'pip install duckduckgo-search' zaroori hai
 
 # ==========================================
-# 🛰️ GOOGLE SEARCH COMMAND (PUBLIC)
+# 🛰️ AI-POWERED SEARCH (PUBLIC & STABLE)
 # ==========================================
 @app.on_message(filters.command(["google", "gle"]))
-async def google_search_func(bot, message):
+async def google_ai_search(bot, message):
     if len(message.command) < 2 and not message.reply_to_message:
         return await message.reply_text("🔎 **ʙᴏss, ᴋʏᴀ sᴇᴀʀᴄʜ ᴋᴀʀᴜ?**\nExample: `/google Nobita`")
 
     user_input = message.reply_to_message.text if message.reply_to_message else " ".join(message.command[1:])
-    msg = await message.reply_text("🛰️ **ᴊᴀʀᴠɪs: sᴇᴀʀᴄʜɪɴɢ ᴛʜᴇ ᴍᴜʟᴛɪᴠᴇʀsᴇ...**")
+    msg = await message.reply_text("📡 **ᴊᴀʀᴠɪs: sᴄᴀɴɴɪɴɢ ᴛʜᴇ ᴡᴇʙ...**")
     
     try:
-        api = SafoneAPI()
-        # FIX: Changed 'google_search' to 'google'
-        results = await api.google(user_input)
+        # AI Search using DuckDuckGo (Better than Google for Bots)
+        with DDGS() as ddgs:
+            results = [r for r in ddgs.text(user_input, max_results=5)]
         
         if not results:
             return await msg.edit("❌ **ɴᴏ ʀᴇsᴜʟᴛs ꜰᴏᴜɴᴅ!**")
 
-        txt = f"🔍 **ɢᴏᴏɢʟᴇ ʀᴇsᴜʟᴛs ꜰᴏʀ:** `{user_input}`\n"
-        # Results format fix for SafoneAPI
-        for result in results[:5]:
+        txt = f"🔍 **AI Search Results for:** `{user_input}`\n"
+        for result in results:
             title = result.get("title", "No Title")
-            link = result.get("link", "#")
+            link = result.get("href", "#")
             txt += f"\n✨ [{title}]({link})"
             
         reply_markup = InlineKeyboardMarkup([
@@ -36,43 +36,10 @@ async def google_search_func(bot, message):
         
         await msg.edit(txt, reply_markup=reply_markup, disable_web_page_preview=True)
     except Exception as e:
-        await msg.edit(f"❌ **Error:** `{e}`")
+        await msg.edit(f"❌ **AI Search Error:** `{e}`")
         logging.exception(e)
 
 # ==========================================
-# 📲 PLAY STORE APP SEARCH (PUBLIC)
+# 📲 PLAY STORE SEARCH (FIXED)
 # ==========================================
-@app.on_message(filters.command(["app", "apps"]))
-async def playstore_search_func(bot, message):
-    if len(message.command) < 2 and not message.reply_to_message:
-        return await message.reply_text("📲 **ᴀᴘᴘ ᴋᴀ ɴᴀᴀᴍ ᴛᴏʜ ʙᴀᴛᴀᴏ!**")
-
-    user_input = message.reply_to_message.text if message.reply_to_message else " ".join(message.command[1:])
-    msg = await message.reply_text("📡 **ᴊᴀʀᴠɪs: ꜰᴇᴛᴄʜɪɴɢ ꜰʀᴏᴍ ᴘʟᴀʏ sᴛᴏʀᴇ...**")
-    
-    try:
-        api = SafoneAPI()
-        res = await api.apps(user_input, 1)
-        
-        if not res or "results" not in res:
-            return await msg.edit("❌ **ᴀᴘᴘ ɴᴏᴛ ꜰᴏᴜɴᴅ!**")
-            
-        data = res["results"][0]
-        desc = data.get("description", "No info")[:200] + "..."
-        
-        info = (
-            f"🚀 **[ᴛɪᴛʟᴇ : {data['title']}]({data['link']})**\n\n"
-            f"👤 **ᴅᴇᴠ**: `{data['developer']}`\n"
-            f"📝 **ɪɴꜰᴏ**: {desc}"
-        )
-        
-        reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("👨‍💻 ᴅᴇᴠᴇʟᴏᴘᴇʀ", url="https://t.me/nobitaxd7")]
-        ])
-        
-        await message.reply_photo(data['icon'], caption=info, reply_markup=reply_markup)
-        await msg.delete()
-    except Exception as e:
-        await message.reply_text(f"❌ **Error:** `{e}`")
-        logging.exception(e)
-        
+# App search ke liye hum ek alternate tool use kar sakte hain agar Safone down hai
