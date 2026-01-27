@@ -17,16 +17,19 @@ async def google_search_func(bot, message):
     
     try:
         api = SafoneAPI()
-        results = await api.google_search(user_input)
+        # FIX: Changed 'google_search' to 'google'
+        results = await api.google(user_input)
         
         if not results:
             return await msg.edit("❌ **ɴᴏ ʀᴇsᴜʟᴛs ꜰᴏᴜɴᴅ!**")
 
         txt = f"🔍 **ɢᴏᴏɢʟᴇ ʀᴇsᴜʟᴛs ꜰᴏʀ:** `{user_input}`\n"
+        # Results format fix for SafoneAPI
         for result in results[:5]:
-            txt += f"\n✨ [{result['title']}]({result['link']})"
+            title = result.get("title", "No Title")
+            link = result.get("link", "#")
+            txt += f"\n✨ [{title}]({link})"
             
-        # Developer Button integration
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("👨‍💻 ᴅᴇᴠᴇʟᴏᴘᴇʀ", url="https://t.me/nobitaxd7")]
         ])
