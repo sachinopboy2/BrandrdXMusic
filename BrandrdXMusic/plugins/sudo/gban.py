@@ -1,5 +1,4 @@
 import asyncio
-
 from pyrogram import filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import Message
@@ -17,33 +16,43 @@ from BrandrdXMusic.utils.database import (
 )
 from BrandrdXMusic.utils.decorators.language import language
 from BrandrdXMusic.utils.extraction import extract_user
-from config import BANNED_USERS
+from config import BANNED_USERS, OWNER_ID # Sirf Config se ID lega
 
-
-@app.on_message(filters.command(["gban", "globalban"]) & SUDOERS)
+# --- Global Ban: Only for Config Owner ---
+@app.on_message(filters.command(["gban", "globalban"]) & filters.user(OWNER_ID))
 @language
 async def global_ban(client, message: Message, _):
     if not message.reply_to_message:
         if len(message.command) != 2:
             return await message.reply_text(_["general_1"])
+    
     user = await extract_user(message)
+    if not user:
+        return await message.reply_text("User nahi mila.")
+
+    # Safety Checks
     if user.id == message.from_user.id:
         return await message.reply_text(_["gban_1"])
     elif user.id == app.id:
         return await message.reply_text(_["gban_2"])
     elif user.id in SUDOERS:
         return await message.reply_text(_["gban_3"])
+
     is_gbanned = await is_banned_user(user.id)
     if is_gbanned:
         return await message.reply_text(_["gban_4"].format(user.mention))
+
     if user.id not in BANNED_USERS:
         BANNED_USERS.add(user.id)
+
     served_chats = []
     chats = await get_served_chats()
     for chat in chats:
         served_chats.append(int(chat["chat_id"]))
+
     time_expected = get_readable_time(len(served_chats))
     mystic = await message.reply_text(_["gban_5"].format(user.mention, time_expected))
+
     number_of_chats = 0
     for chat_id in served_chats:
         try:
@@ -53,6 +62,7 @@ async def global_ban(client, message: Message, _):
             await asyncio.sleep(int(fw.value))
         except:
             continue
+
     await add_banned_user(user.id)
     await message.reply_text(
         _["gban_6"].format(
@@ -67,25 +77,33 @@ async def global_ban(client, message: Message, _):
     )
     await mystic.delete()
 
-
-@app.on_message(filters.command(["ungban"]) & SUDOERS)
+# --- Global Unban: Only for Config Owner ---
+@app.on_message(filters.command(["ungban"]) & filters.user(OWNER_ID))
 @language
 async def global_un(client, message: Message, _):
     if not message.reply_to_message:
         if len(message.command) != 2:
             return await message.reply_text(_["general_1"])
+    
     user = await extract_user(message)
+    if not user:
+        return await message.reply_text("User nahi mila.")
+
     is_gbanned = await is_banned_user(user.id)
     if not is_gbanned:
         return await message.reply_text(_["gban_7"].format(user.mention))
+
     if user.id in BANNED_USERS:
         BANNED_USERS.remove(user.id)
+
     served_chats = []
     chats = await get_served_chats()
     for chat in chats:
         served_chats.append(int(chat["chat_id"]))
+
     time_expected = get_readable_time(len(served_chats))
     mystic = await message.reply_text(_["gban_8"].format(user.mention, time_expected))
+
     number_of_chats = 0
     for chat_id in served_chats:
         try:
@@ -95,17 +113,19 @@ async def global_un(client, message: Message, _):
             await asyncio.sleep(int(fw.value))
         except:
             continue
+
     await remove_banned_user(user.id)
     await message.reply_text(_["gban_9"].format(user.mention, number_of_chats))
     await mystic.delete()
 
-
+# --- Gban List: For Sudoers & Owner ---
 @app.on_message(filters.command(["gbannedusers", "gbanlist"]) & SUDOERS)
 @language
 async def gbanned_list(client, message: Message, _):
     counts = await get_banned_count()
     if counts == 0:
         return await message.reply_text(_["gban_10"])
+    
     mystic = await message.reply_text(_["gban_11"])
     msg = _["gban_12"]
     count = 0
@@ -114,12 +134,14 @@ async def gbanned_list(client, message: Message, _):
         count += 1
         try:
             user = await app.get_users(user_id)
-            user = user.first_name if not user.mention else user.mention
-            msg += f"{count}➤ {user}\n"
-        except Exception:
-            msg += f"{count}➤ {user_id}\n"
+            user_name = user.first_name if not user.mention else user.mention
+            msg += f"{count}➤ {user_name} [<code>{user_id}</code>]\n"
+        except:
+            msg += f"{count}➤ <code>{user_id}</code>\n"
             continue
+            
     if count == 0:
         return await mystic.edit_text(_["gban_10"])
     else:
         return await mystic.edit_text(msg)
+        
