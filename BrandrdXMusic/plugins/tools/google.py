@@ -1,45 +1,61 @@
-
 import logging
+import requests
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from BrandrdXMusic import app
-from duckduckgo_search import DDGS # Iske liye 'pip install duckduckgo-search' zaroori hai
 
 # ==========================================
-# 🛰️ AI-POWERED SEARCH (PUBLIC & STABLE)
+# 🤖 AI SEARCH / ASK COMMAND (PUBLIC)
 # ==========================================
-@app.on_message(filters.command(["google", "gle"]))
-async def google_ai_search(bot, message):
+@app.on_message(filters.command(["google", "gle", "ask"]))
+async def ai_search_func(bot, message):
     if len(message.command) < 2 and not message.reply_to_message:
-        return await message.reply_text("🔎 **ʙᴏss, ᴋʏᴀ sᴇᴀʀᴄʜ ᴋᴀʀᴜ?**\nExample: `/google Nobita`")
+        return await message.reply_text("🔎 **ʙᴏss, ᴋʏᴀ ᴘᴏᴏᴄʜɴᴀ ʜᴀɪ?**\nExample: `/google Nobita ki gf kon hai?`")
 
     user_input = message.reply_to_message.text if message.reply_to_message else " ".join(message.command[1:])
-    msg = await message.reply_text("📡 **ᴊᴀʀᴠɪs: sᴄᴀɴɴɪɴɢ ᴛʜᴇ ᴡᴇʙ...**")
+    msg = await message.reply_text("🛰️ **ᴊᴀʀᴠɪs: ᴀɴᴀʟʏᴢɪɴɢ ʏᴏᴜʀ ǫᴜᴇʀʏ...**")
     
     try:
-        # AI Search using DuckDuckGo (Better than Google for Bots)
-        with DDGS() as ddgs:
-            results = [r for r in ddgs.text(user_input, max_results=5)]
+        # Blackbox AI Free API - No Key Required
+        api_url = f"https://pika-api.vercel.app/blackbox?query={user_input}"
+        response = requests.get(api_url).json()
         
-        if not results:
-            return await msg.edit("❌ **ɴᴏ ʀᴇsᴜʟᴛs ꜰᴏᴜɴᴅ!**")
+        # AI se answer nikalna
+        answer = response.get("results", "Sorry Boss, I couldn't process that.")
+        
+        # Agar answer bahut bada ho toh limit karna
+        if len(answer) > 4000:
+            answer = answer[:3900] + "..."
 
-        txt = f"🔍 **AI Search Results for:** `{user_input}`\n"
-        for result in results:
-            title = result.get("title", "No Title")
-            link = result.get("href", "#")
-            txt += f"\n✨ [{title}]({link})"
-            
+        txt = f"🤖 **ᴊᴀʀᴠɪs AI sᴇᴀʀᴄʜ:**\n\n{answer}"
+        
+        # Aapka Manga Hua Developer Button (@nobitaxd7)
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("👨‍💻 ᴅᴇᴠᴇʟᴏᴘᴇʀ", url="https://t.me/nobitaxd7")]
         ])
         
-        await msg.edit(txt, reply_markup=reply_markup, disable_web_page_preview=True)
+        await msg.edit(txt, reply_markup=reply_markup)
+        
     except Exception as e:
-        await msg.edit(f"❌ **AI Search Error:** `{e}`")
+        # Fallback agar API down ho
+        await msg.edit(f"❌ **AI Error:** `Server is busy, try again later.`")
         logging.exception(e)
 
 # ==========================================
-# 📲 PLAY STORE SEARCH (FIXED)
+# 📲 PLAY STORE SEARCH (DIRECT LINK)
 # ==========================================
-# App search ke liye hum ek alternate tool use kar sakte hain agar Safone down hai
+@app.on_message(filters.command(["app", "apps"]))
+async def app_search(bot, message):
+    user_input = message.reply_to_message.text if message.reply_to_message else " ".join(message.command[1:])
+    if not user_input:
+        return await message.reply_text("📲 **ᴀᴘᴘ ᴋᴀ ɴᴀᴀᴍ ᴛᴏʜ ʙᴀᴛᴀᴏ!**")
+
+    app_link = f"https://play.google.com/store/search?q={user_input.replace(' ', '+')}&c=apps"
+    
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🚀 ᴠɪᴇᴡ ᴏɴ ᴘʟᴀʏ sᴛᴏʀᴇ", url=app_link)],
+        [InlineKeyboardButton("👨‍💻 ᴅᴇᴠᴇʟᴏᴘᴇʀ", url="https://t.me/nobitaxd7")]
+    ])
+    
+    await message.reply_text(f"✅ **sᴇᴀʀᴄʜɪɴɢ ᴘʟᴀʏ sᴛᴏʀᴇ ꜰᴏʀ:** `{user_input}`", reply_markup=reply_markup)
+    
