@@ -1,59 +1,75 @@
 import logging
-
-from googlesearch import search
 from pyrogram import filters
-
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from BrandrdXMusic import app
 from SafoneAPI import SafoneAPI
 
-
+# ==========================================
+# 🛰️ GOOGLE SEARCH COMMAND (PUBLIC)
+# ==========================================
 @app.on_message(filters.command(["google", "gle"]))
-async def google(bot, message):
+async def google_search_func(bot, message):
     if len(message.command) < 2 and not message.reply_to_message:
-        await message.reply_text("Example:\n\n`/google lord ram`")
-        return
+        return await message.reply_text("🔎 **ʙᴏss, ᴋʏᴀ sᴇᴀʀᴄʜ ᴋᴀʀᴜ?**\nExample: `/google Nobita`")
 
-    if message.reply_to_message and message.reply_to_message.text:
-        user_input = message.reply_to_message.text
-    else:
-        user_input = " ".join(message.command[1:])
-    b = await message.reply_text("**Sᴇᴀʀᴄʜɪɴɢ ᴏɴ Gᴏᴏɢʟᴇ....**")
+    user_input = message.reply_to_message.text if message.reply_to_message else " ".join(message.command[1:])
+    msg = await message.reply_text("🛰️ **ᴊᴀʀᴠɪs: sᴇᴀʀᴄʜɪɴɢ ᴛʜᴇ ᴍᴜʟᴛɪᴠᴇʀsᴇ...**")
+    
     try:
-        a = search(user_input, advanced=True)
-        txt = f"Search Query: {user_input}\n\nresults"
-        for result in a:
-            txt += f"\n\n[❍ {result.title}]({result.url})\n<b>{result.description}</b>"
-        await b.edit(
-            txt,
-            disable_web_page_preview=True,
-        )
+        api = SafoneAPI()
+        results = await api.google_search(user_input)
+        
+        if not results:
+            return await msg.edit("❌ **ɴᴏ ʀᴇsᴜʟᴛs ꜰᴏᴜɴᴅ!**")
+
+        txt = f"🔍 **ɢᴏᴏɢʟᴇ ʀᴇsᴜʟᴛs ꜰᴏʀ:** `{user_input}`\n"
+        for result in results[:5]:
+            txt += f"\n✨ [{result['title']}]({result['link']})"
+            
+        # Developer Button integration
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("👨‍💻 ᴅᴇᴠᴇʟᴏᴘᴇʀ", url="https://t.me/nobitaxd7")]
+        ])
+        
+        await msg.edit(txt, reply_markup=reply_markup, disable_web_page_preview=True)
     except Exception as e:
-        await b.edit(e)
+        await msg.edit(f"❌ **Error:** `{e}`")
         logging.exception(e)
 
-
+# ==========================================
+# 📲 PLAY STORE APP SEARCH (PUBLIC)
+# ==========================================
 @app.on_message(filters.command(["app", "apps"]))
-async def app(bot, message):
+async def playstore_search_func(bot, message):
     if len(message.command) < 2 and not message.reply_to_message:
-        await message.reply_text("Example:\n\n`/app Free Fire`")
-        return
+        return await message.reply_text("📲 **ᴀᴘᴘ ᴋᴀ ɴᴀᴀᴍ ᴛᴏʜ ʙᴀᴛᴀᴏ!**")
 
-    if message.reply_to_message and message.reply_to_message.text:
-        user_input = message.reply_to_message.text
-    else:
-        user_input = " ".join(message.command[1:])
-    cbb = await message.reply_text("**Sᴇᴀʀᴄʜɪɴɢ ᴏɴ Pʟᴀʏ Sᴛᴏʀᴇ....**")
-    a = await SafoneAPI().apps(user_input, 1)
-    b = a["results"][0]
-    icon = b["icon"]
-    id = b["id"]
-    link = b["link"]
-    ca = b["description"]
-    title = b["title"]
-    dev = b["developer"]
-    info = f"<b>[ᴛɪᴛʟᴇ : {title}]({link})</b>\n<b>ɪᴅ</b>: <code>{id}</code>\n<b>ᴅᴇᴠᴇʟᴏᴘᴇʀ</b> : {dev}\n<b>ᴅᴇsᴄʀɪᴘᴛɪᴏɴ </b>: {ca}"
+    user_input = message.reply_to_message.text if message.reply_to_message else " ".join(message.command[1:])
+    msg = await message.reply_text("📡 **ᴊᴀʀᴠɪs: ꜰᴇᴛᴄʜɪɴɢ ꜰʀᴏᴍ ᴘʟᴀʏ sᴛᴏʀᴇ...**")
+    
     try:
-        await message.reply_photo(icon, caption=info)
-        await cbb.delete()
+        api = SafoneAPI()
+        res = await api.apps(user_input, 1)
+        
+        if not res or "results" not in res:
+            return await msg.edit("❌ **ᴀᴘᴘ ɴᴏᴛ ꜰᴏᴜɴᴅ!**")
+            
+        data = res["results"][0]
+        desc = data.get("description", "No info")[:200] + "..."
+        
+        info = (
+            f"🚀 **[ᴛɪᴛʟᴇ : {data['title']}]({data['link']})**\n\n"
+            f"👤 **ᴅᴇᴠ**: `{data['developer']}`\n"
+            f"📝 **ɪɴꜰᴏ**: {desc}"
+        )
+        
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("👨‍💻 ᴅᴇᴠᴇʟᴏᴘᴇʀ", url="https://t.me/nobitaxd7")]
+        ])
+        
+        await message.reply_photo(data['icon'], caption=info, reply_markup=reply_markup)
+        await msg.delete()
     except Exception as e:
-        await message.reply_text(e)
+        await message.reply_text(f"❌ **Error:** `{e}`")
+        logging.exception(e)
+        
