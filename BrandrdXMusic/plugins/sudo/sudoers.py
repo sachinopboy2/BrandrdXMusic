@@ -9,7 +9,7 @@ from BrandrdXMusic.utils.extraction import extract_user
 from BrandrdXMusic.utils.inline import close_markup
 from config import BANNED_USERS, OWNER_ID
 
-
+# --- Sudo Add Command (Only for Real Owner) ---
 @app.on_message(filters.command(["addsudo"]) & filters.user(OWNER_ID))
 @language
 async def useradd(client, message: Message, _):
@@ -17,8 +17,12 @@ async def useradd(client, message: Message, _):
         if len(message.command) != 2:
             return await message.reply_text(_["general_1"])
     user = await extract_user(message)
+    if not user:
+        return await message.reply_text("User nahi mila. Dubara check karein.")
+        
     if user.id in SUDOERS:
         return await message.reply_text(_["sudo_1"].format(user.mention))
+    
     added = await add_sudo(user.id)
     if added:
         SUDOERS.add(user.id)
@@ -26,7 +30,7 @@ async def useradd(client, message: Message, _):
     else:
         await message.reply_text(_["sudo_8"])
 
-
+# --- Sudo Remove Command (Only for Real Owner) ---
 @app.on_message(filters.command(["delsudo", "rmsudo"]) & filters.user(OWNER_ID))
 @language
 async def userdel(client, message: Message, _):
@@ -34,8 +38,12 @@ async def userdel(client, message: Message, _):
         if len(message.command) != 2:
             return await message.reply_text(_["general_1"])
     user = await extract_user(message)
+    if not user:
+        return await message.reply_text("User nahi mila.")
+        
     if user.id not in SUDOERS:
         return await message.reply_text(_["sudo_3"].format(user.mention))
+    
     removed = await remove_sudo(user.id)
     if removed:
         SUDOERS.remove(user.id)
@@ -43,33 +51,36 @@ async def userdel(client, message: Message, _):
     else:
         await message.reply_text(_["sudo_8"])
 
-
+# --- Sudo List Command (Only for Sudo/Owner) ---
 @app.on_message(filters.command(["sudolist", "listsudo", "sudoers"]) & ~BANNED_USERS)
 @language
 async def sudoers_list(client, message: Message, _):
+    # SECURITY FIX: Agar koi unknown banda check karega to use list nahi dikhegi
     if message.from_user.id not in SUDOERS:
-        return await message.reply_text("💔 <b>ᴏᴡɴᴇʀs:</b>\n1➤ <a href='https://t.me/BRANDED_WORLD'>🇷🇺⛦°𝗕𝗥𝗔𝗡𝗗𝗘𝗗 𓆩🇽𓆪 𝗞𝗜𝗡𝗚🇳</a>",
-        disable_web_page_preview=True,
-        parse_mode="html")
-    text = _["sudo_5"]
-    user = await app.get_users(OWNER_ID)
-    user = user.first_name if not user.mention else user.mention
-    text += f"1➤ {user}\n"
+        return await message.reply_text("Aapke paas is command ka access nahi hai.")
+
+    text = "⭐️ **<u>ᴏᴡɴᴇʀ:</u>**\n"
+    try:
+        user = await app.get_users(OWNER_ID)
+        name = user.first_name if not user.mention else user.mention
+        text += f"1➤ {name} [<code>{OWNER_ID}</code>]\n"
+    except:
+        text += f"1➤ Owner [<code>{OWNER_ID}</code>]\n"
+
     count = 0
-    smex = 0
+    sudo_text = ""
     for user_id in SUDOERS:
         if user_id != OWNER_ID:
             try:
                 user = await app.get_users(user_id)
-                user = user.first_name if not user.mention else user.mention
-                if smex == 0:
-                    smex += 1
-                    text += _["sudo_6"]
+                name = user.first_name if not user.mention else user.mention
                 count += 1
-                text += f"{count}➤ {user}\n"
+                sudo_text += f"{count}➤ {name} [<code>{user_id}</code>]\n"
             except:
                 continue
-    if not text:
-        await message.reply_text(_["sudo_7"])
-    else:
-        await message.reply_text(text, reply_markup=close_markup(_))
+    
+    if sudo_text:
+        text += f"\n🪄 **<u>sᴜᴅᴏ ᴜsᴇʀs:</u>**\n{sudo_text}"
+    
+    await message.reply_text(text, reply_markup=close_markup(_))
+    
