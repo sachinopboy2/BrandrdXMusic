@@ -35,7 +35,7 @@ API_KEY = getenv("API_KEY", 'NxGBNexGenBots6c30dd')
 HEROKU_APP_NAME = getenv("HEROKU_APP_NAME")
 HEROKU_API_KEY = getenv("HEROKU_API_KEY")
 
-UPSTREAM_REPO = getenv("UPSTREAM_REPO", "https://github.com/WCGKING/BrandrdXMusic")
+UPSTREAM_REPO = getenv("UPSTREAM_REPO", "https://github.com/sachinopboy2/BrandrdXMusic")
 UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
 GIT_TOKEN = getenv("GIT_TOKEN", None)
 
