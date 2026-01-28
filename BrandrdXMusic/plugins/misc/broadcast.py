@@ -1,53 +1,60 @@
 import asyncio
 from pyrogram import filters
 from pyrogram.types import Message
+from pyrogram.errors import FloodWait
 from BrandrdXMusic import app
 from BrandrdXMusic.utils.database import get_served_chats, get_served_users
 from config import OWNER_ID
 
-# --- Hacker/Others Response ---
-@app.on_message(filters.command(["broadcast", "gcast"]) & ~filters.user(OWNER_ID))
-async def insult_hacker(client, message: Message):
-    await message.reply_text("ᴊᴀᴋᴀʀ ɴᴏʙɪᴛᴀ ᴘᴀᴘᴀ sᴇ sᴜᴅᴏ ᴍᴀɴɢ 😂")
+# --- Fast Broadcast Function ---
+async def send_msg(chat_id, message):
+    try:
+        await message.copy(chat_id)
+        return True
+    except FloodWait as e:
+        await asyncio.sleep(e.value) # Agar Telegram stop kare toh wait karega
+        return await send_msg(chat_id, message)
+    except:
+        return False
 
-# --- Nobita Broadcast (Groups + Users) ---
+# --- Main Command ---
 @app.on_message(filters.command(["broadcast", "gcast"]) & filters.user(OWNER_ID))
-async def nobita_broadcast(client, message: Message):
-    # Check if replied to a message
+async def fast_broadcast(client, message: Message):
     if not message.reply_to_message:
-        return await message.reply_text("❌ **Usage:** Kisi message par reply karke `/broadcast` likhein!")
+        return await message.reply_text("❌ Kisi message par reply karein!")
 
-    status_msg = await message.reply_text("📣 **ɴᴏʙɪᴛᴀ ɪs sᴛᴀʀᴛɪɴɢ ᴀ ʙʀᴏᴀᴅᴄᴀsᴛ...**")
+    status_msg = await message.reply_text("⚡ **ғᴀsᴛ ʙʀᴏᴀᴅᴄᴀsᴛ sᴛᴀʀᴛɪɴɢ...**")
     
-    # Database se data uthana
+    # Sabhi IDs nikalna
     served_chats = await get_served_chats()
     served_users = await get_served_users()
-    
-    # Dono ko merge karna
     all_targets = [int(chat["chat_id"]) for chat in served_chats]
     all_targets.extend([int(user["user_id"]) for user in served_users])
-    
+
     sent = 0
     failed = 0
-    total = len(all_targets)
     
-    for target_id in all_targets:
-        try:
-            # Copy message without "Forwarded" tag
-            await message.reply_to_message.copy(target_id)
-            sent += 1
-            # Flood protection (Slow and steady)
-            await asyncio.sleep(0.3) 
-        except Exception:
-            failed += 1
-            continue
-            
-    # Final Result
+    # ⚡ Batch Processing (Ek sath 10 logo ko jayega)
+    batch_size = 10 
+    for i in range(0, len(all_targets), batch_size):
+        batch = all_targets[i : i + batch_size]
+        tasks = [send_msg(chat_id, message.reply_to_message) for chat_id in batch]
+        
+        results = await asyncio.gather(*tasks)
+        
+        for res in results:
+            if res:
+                sent += 1
+            else:
+                failed += 1
+        
+        # Chota sa gap taaki bot crash na ho
+        await asyncio.sleep(0.1)
+
     await status_msg.edit_text(
-        f"✅ **ɴᴏʙɪᴛᴀ ʙʀᴏᴀᴅᴄᴀsᴛ ᴇɴᴅᴇᴅ!**\n\n"
-        f"🚀 **ᴛᴏᴛᴀʟ sᴇɴᴛ:** `{sent}`\n"
+        f"🚀 **ᴜʟᴛʀᴀ ғᴀsᴛ ʙʀᴏᴀᴅᴄᴀsᴛ ᴅᴏɴᴇ!**\n\n"
+        f"✅ **sᴇɴᴛ:** `{sent}`\n"
         f"❌ **ғᴀɪʟᴇᴅ:** `{failed}`\n"
-        f"📊 **ᴛᴏᴛᴀʟ ᴛᴀʀɢᴇᴛs:** `{total}`\n\n"
-        f"**ᴀʟʟ ᴅᴏɴᴇ, ᴘᴀᴘᴀ!**"
+        f"**ᴘᴀᴘᴀ, ᴋᴀᴀᴍ ʜᴏ ɢᴀʏᴀ!**"
     )
     
