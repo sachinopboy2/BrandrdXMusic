@@ -28,7 +28,7 @@ def track_markup(_, videoid, user_id, channel, fplay):
 # Stream Timer Markup
 def stream_markup_timer(_, vidid, chat_id, played, dur):
     played_sec = time_to_seconds(played)
-    duration_sec = time_to_seconds(dur) or 1  # avoid ZeroDivisionError
+    duration_sec = time_to_seconds(dur) or 1
     percentage = (played_sec / duration_sec) * 100
     umm = math.floor(percentage)
 
@@ -60,17 +60,17 @@ def stream_markup_timer(_, vidid, chat_id, played, dur):
             )
         ],
         [
-            InlineKeyboardButton(text="▷", callback_data=f"ADMIN Resume|{chat_id}"),
-            InlineKeyboardButton(text="II", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text="↻", callback_data=f"ADMIN Replay|{chat_id}"),
-            InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
-            InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="Resume ▷", callback_data=f"ADMIN Resume|{chat_id}"),
+            InlineKeyboardButton(text="Pause II", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="Skip ‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
         ],
         [
-            InlineKeyboardButton(text="ᴏᴡɴᴇʀ", url="https://t.me/NOBITAXD7"),
-            InlineKeyboardButton(text="sᴜᴘᴘᴏʀᴛ", url="https://t.me/sapphire_loveee"),
+            InlineKeyboardButton(text="Replay ↻", callback_data=f"ADMIN Replay|{chat_id}"),
+            InlineKeyboardButton(text="Stop ▢", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
-        [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")],
+        [
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")
+        ],
     ]
 
 
@@ -78,17 +78,17 @@ def stream_markup_timer(_, vidid, chat_id, played, dur):
 def stream_markup(_, videoid, chat_id):
     return [
         [
-            InlineKeyboardButton(text="▷", callback_data=f"ADMIN Resume|{chat_id}"),
-            InlineKeyboardButton(text="II", callback_data=f"ADMIN Pause|{chat_id}"),
-            InlineKeyboardButton(text="↻", callback_data=f"ADMIN Replay|{chat_id}"),
-            InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
-            InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
+            InlineKeyboardButton(text="Resume ▷", callback_data=f"ADMIN Resume|{chat_id}"),
+            InlineKeyboardButton(text="Pause II", callback_data=f"ADMIN Pause|{chat_id}"),
+            InlineKeyboardButton(text="Skip ‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
         ],
         [
-            InlineKeyboardButton(text="ᴏᴡɴᴇʀ", url="https://t.me/NOBITAXD7"),
-            InlineKeyboardButton(text="sᴜᴘᴘᴏʀᴛ", url="https://t.me/sapphire_loveee"),
+            InlineKeyboardButton(text="Replay ↻", callback_data=f"ADMIN Replay|{chat_id}"),
+            InlineKeyboardButton(text="Stop ▢", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
-        [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")],
+        [
+            InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")
+        ],
     ]
 
 
@@ -98,7 +98,7 @@ def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
-                callback_data=f"Playlists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",  # fix name if needed
+                callback_data=f"Playlists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",
             ),
             InlineKeyboardButton(
                 text=_["P_B_2"],
@@ -153,7 +153,7 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
             ),
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
-                callback_data=f"forceclose {videoid}|{user_id}",  # ✅ fixed
+                callback_data=f"forceclose {videoid}|{user_id}",
             ),
             InlineKeyboardButton(
                 text="▷",
@@ -161,3 +161,4 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
             ),
         ],
     ]
+    
