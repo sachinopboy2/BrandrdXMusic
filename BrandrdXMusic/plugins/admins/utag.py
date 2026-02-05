@@ -1,15 +1,9 @@
 import asyncio
-import random
 from pyrogram import Client, filters
-from pyrogram.enums import ChatType
-from pyrogram.enums import ChatType, ChatMemberStatus
-from pyrogram.errors import UserNotParticipant
-from pyrogram.types import ChatPermissions
 from BrandrdXMusic import app
 from BrandrdXMusic.utils.branded_ban import admin_filter
 
 SPAM_CHATS = {}
-
 
 @app.on_message(
     filters.command(["utag", "uall"], prefixes=["/", "@", ".", "#"]) & admin_filter
@@ -17,43 +11,55 @@ SPAM_CHATS = {}
 async def tag_all_users(_, message):
     global SPAM_CHATS
     chat_id = message.chat.id
+    
     if len(message.text.split()) == 1:
         await message.reply_text(
-            "** ɢɪᴠᴇ sᴏᴍᴇ ᴛᴇxᴛ ᴛᴏ ᴛᴀɢ ᴀʟʟ, ʟɪᴋᴇ »** `@utag Hi Friends`"
+            "**✨ ᴜsᴀɢᴇ »** `/utag Hello Friends`"
         )
         return
 
     text = message.text.split(None, 1)[1]
-    if text:
-        await message.reply_text(
-            "**ᴜᴛᴀɢ [ᴜɴʟɪᴍɪᴛᴇᴅ ᴛᴀɢ] sᴛᴀʀᴛᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ!**\n\n**๏ ᴛᴀɢɢɪɴɢ ᴡɪᴛʜ sʟᴇᴇᴘ ᴏғ 7 sᴇᴄ.**\n\n**➥ ᴏғғ ᴛᴀɢɢɪɴɢ ʙʏ » /stoputag**"
-        )
+    await message.reply_text(
+        "**🚀 ᴜɴʟɪᴍɪᴛᴇᴅ ᴛᴀɢ sᴛᴀʀᴛᴇᴅ!**\n\n"
+        "**⚡ ɪɴᴛᴇʀᴠᴀʟ:** `7 sᴇᴄ`\n"
+        "**❌ sᴛᴏᴘ:** /stoputag"
+    )
 
     SPAM_CHATS[chat_id] = True
-    f = True
-    while f:
-        if SPAM_CHATS.get(chat_id) == False:
-            await message.reply_text("**ᴜɴʟɪᴍɪᴛᴇᴅ ᴛᴀɢɢɪɴɢ sᴜᴄᴄᴇssғᴜʟʟʏ sᴛᴏᴘᴘᴇᴅ.**")
-            break
+    
+    while SPAM_CHATS.get(chat_id):
         usernum = 0
         usertxt = ""
         try:
-            async for m in app.get_chat_members(message.chat.id):
-                if m.user.is_bot:
+            async for m in app.get_chat_members(chat_id):
+                if not SPAM_CHATS.get(chat_id):
+                    break
+                
+                if m.user.is_bot or m.user.is_deleted:
                     continue
+                
                 usernum += 1
-                usertxt += f"\n⊚ [{m.user.first_name}](tg://user?id={m.user.id})\n"
+                # Fancy format for tags
+                usertxt += f"  ┣ ⚡️ [{m.user.first_name}](tg://user?id={m.user.id})\n"
+                
                 if usernum == 5:
                     await app.send_message(
-                        message.chat.id,
-                        f"{text}\n{usertxt}\n\n|| ➥ ᴏғғ ᴛᴀɢɢɪɴɢ ʙʏ » /stoputag ||",
+                        chat_id,
+                        f"**📢 {text}**\n\n"
+                        f"**┏━━━━━━━★**\n"
+                        f"{usertxt}"
+                        f"**┗━━━━━━━★**\n\n"
+                        f"**🛑 sᴛᴏᴘ ʙʏ » /stoputag**"
                     )
                     usernum = 0
                     usertxt = ""
                     await asyncio.sleep(7)
+            
+            if not SPAM_CHATS.get(chat_id):
+                break
         except Exception as e:
-            print(e)
-
+            print(f"Error: {e}")
+            break
 
 @app.on_message(
     filters.command(
@@ -65,8 +71,9 @@ async def tag_all_users(_, message):
 async def stop_tagging(_, message):
     global SPAM_CHATS
     chat_id = message.chat.id
-    if SPAM_CHATS.get(chat_id) == True:
+    if SPAM_CHATS.get(chat_id):
         SPAM_CHATS[chat_id] = False
-        return await message.reply_text("**ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ sᴛᴏᴘᴘɪɴɢ ᴜɴʟɪᴍɪᴛᴇᴅ ᴛᴀɢɢɪɴɢ...**")
+        await message.reply_text("**✅ ᴜɴʟɪᴍɪᴛᴇᴅ ᴛᴀɢɢɪɴɢ sᴜᴄᴄᴇssғᴜʟʟʏ sᴛᴏᴘᴘᴇᴅ!**")
     else:
-        await message.reply_text("**ᴜᴛᴀɢ ᴘʀᴏᴄᴇss ɪs ɴᴏᴛ ᴀᴄᴛɪᴠᴇ**")
+        await message.reply_text("**❌ ᴜᴛᴀɢ ᴘʀᴏᴄᴇss ɪs ɴᴏᴛ ᴀᴄᴛɪᴠᴇ.**")
+        
