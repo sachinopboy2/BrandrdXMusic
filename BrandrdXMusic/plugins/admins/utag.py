@@ -27,39 +27,43 @@ async def tag_all_users(_, message):
 
     SPAM_CHATS[chat_id] = True
     
-    while SPAM_CHATS.get(chat_id):
-        usernum = 0
-        usertxt = ""
-        try:
-            async for m in app.get_chat_members(chat_id):
-                if not SPAM_CHATS.get(chat_id):
-                    break
-                
-                if m.user.is_bot or m.user.is_deleted:
-                    continue
-                
-                usernum += 1
-                # Fancy format for tags
-                usertxt += f"  ┣ ⚡️ [{m.user.first_name}](tg://user?id={m.user.id})\n"
-                
-                if usernum == 5:
-                    await app.send_message(
-                        chat_id,
-                        f"**📢 {text}**\n\n"
-                        f"**┏━━━━━━━★**\n"
-                        f"{usertxt}"
-                        f"**┗━━━━━━━★**\n\n"
-                        f"**🛑 sᴛᴏᴘ ʙʏ » /stoputag**"
-                    )
-                    usernum = 0
-                    usertxt = ""
-                    await asyncio.sleep(7)
-            
+    usernum = 0
+    usertxt = ""
+    
+    try:
+        # Ek baar saare members fetch karega
+        async for m in app.get_chat_members(chat_id):
+            # Check if admin stopped manually
             if not SPAM_CHATS.get(chat_id):
                 break
-        except Exception as e:
-            print(f"Error: {e}")
-            break
+            
+            if m.user.is_bot or m.user.is_deleted:
+                continue
+            
+            usernum += 1
+            usertxt += f"  ┣ ⚡️ [{m.user.first_name}](tg://user?id={m.user.id})\n"
+            
+            if usernum == 5:
+                await app.send_message(
+                    chat_id,
+                    f"**📢 {text}**\n\n"
+                    f"**┏━━━━━━━★**\n"
+                    f"{usertxt}"
+                    f"**┗━━━━━━━★**\n\n"
+                    f"**🛑 sᴛᴏᴘ ʙʏ » /stoputag**"
+                )
+                usernum = 0
+                usertxt = ""
+                await asyncio.sleep(7)
+
+        # Jab saare members khatam ho jayein
+        if SPAM_CHATS.get(chat_id):
+            SPAM_CHATS[chat_id] = False
+            await message.reply_text("**✅ ᴀʟʟ ᴍᴇᴍʙᴇʀs ᴛᴀɢɢᴇᴅ sᴜᴄᴄᴇssғᴜʟʟʏ!**")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        SPAM_CHATS[chat_id] = False
 
 @app.on_message(
     filters.command(
@@ -73,7 +77,7 @@ async def stop_tagging(_, message):
     chat_id = message.chat.id
     if SPAM_CHATS.get(chat_id):
         SPAM_CHATS[chat_id] = False
-        await message.reply_text("**✅ ᴜɴʟɪᴍɪᴛᴇᴅ ᴛᴀɢɢɪɴɢ sᴜᴄᴄᴇssғᴜʟʟʏ sᴛᴏᴘᴘᴇᴅ!**")
+        await message.reply_text("**✅ ᴜɴʟɪᴍɪᴛᴇᴅ ᴛᴀɢɢɪɴɢ ʜᴀs ʙᴇᴇɴ sᴛᴏᴘᴘᴇᴅ.**")
     else:
-        await message.reply_text("**❌ ᴜᴛᴀɢ ᴘʀᴏᴄᴇss ɪs ɴᴏᴛ ᴀᴄᴛɪᴠᴇ.**")
+        await message.reply_text("**❌ ɴᴏ ᴀᴄᴛɪᴠᴇ ᴛᴀɢɢɪɴɢ ᴘʀᴏᴄᴇss.**")
         
