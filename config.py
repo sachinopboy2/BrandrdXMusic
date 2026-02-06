@@ -40,7 +40,7 @@ UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
 GIT_TOKEN = getenv("GIT_TOKEN", None)
 
 # --- SUPPORT LINKS ---
-SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/sapphire_loveee")
+SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/Sanginixbots")
 SUPPORT_CHAT = getenv("SUPPORT_CHAT", "https://t.me/sapphire_loveee")
 
 # --- ASSISTANT PROTOCOLS ---
@@ -78,18 +78,18 @@ autoclean = []
 confirmer = {}
 
 # --- MCU THEME: IMAGE ASSETS ---
-START_IMG_URL = getenv("START_IMG_URL", "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg")
-PING_IMG_URL = getenv("PING_IMG_URL", "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg")
-PLAYLIST_IMG_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-STATS_IMG_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-TELEGRAM_AUDIO_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-TELEGRAM_VIDEO_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-STREAM_IMG_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-SOUNCLOUD_IMG_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-YOUTUBE_IMG_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-SPOTIFY_ARTIST_IMG_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-SPOTIFY_ALBUM_IMG_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
-SPOTIFY_PLAYLIST_IMG_URL = "https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg"
+START_IMG_URL = getenv("START_IMG_URL", "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg")
+PING_IMG_URL = getenv("PING_IMG_URL", "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg")
+PLAYLIST_IMG_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+STATS_IMG_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+TELEGRAM_AUDIO_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+TELEGRAM_VIDEO_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+STREAM_IMG_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+SOUNCLOUD_IMG_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+YOUTUBE_IMG_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+SPOTIFY_ARTIST_IMG_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+SPOTIFY_ALBUM_IMG_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
+SPOTIFY_PLAYLIST_IMG_URL = "https://graph.org/file/01c9f81cea701069de02d-9f2812d4759c53e5d4.jpg"
 
 # --- UTILS ---
 def time_to_seconds(time):
