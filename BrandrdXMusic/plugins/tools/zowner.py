@@ -11,8 +11,8 @@ from BrandrdXMusic.utils.database import add_served_chat, get_assistant
 @app.on_message(filters.command("repo"))
 async def help(client: Client, message: Message):
     await message.reply_photo(
-        photo=f"https://telegra.ph/file/1aac9a42f6f35138da34b.jpg",
-        caption=f""" ⎯⁠⁠⁠⁠‌⎯⁠⁠⁠‌ ꯭꯭𝚴꯭‌𝛐꯭𝛃꯭‌𝛊꯭‌𝛕꯭𝛂꯭‌𝅃⁠⁠⁠ꀭ꯭‧₊꯭♡゙꯭꯬ """,
+        photo=f"https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg",
+        caption=f""" 𝐟𝐮𝐥𝐥 𝐟𝐢𝐱 𝐫𝐞𝐩𝐨 𝐜𝐡𝐚𝐡𝐢𝐲𝐞 𝐭𝐨 𝐩𝐚𝐡𝐥𝐞 𝐧𝐨𝐛𝐢𝐭𝐚 𝐤𝐨 𝐩𝐚𝐩𝐚 𝐛𝐨𝐥 𝐤𝐞 𝐚𝐚 """,
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -28,7 +28,7 @@ async def help(client: Client, message: Message):
 @app.on_message(filters.command("clone"))
 async def clones(client: Client, message: Message):
     await message.reply_photo(
-        photo=f"https://telegra.ph/file/1aac9a42f6f35138da34b.jpg",
+        photo=f"https://graph.org/file/85091410fd58ae4f2c1cb-adb754c65e20176ce8.jpg",
         caption=f"""**🙂You Are Not Sudo User So You Are Not Allowed To Clone Me.**\n**😌Click Given Below Button And Host Manually Otherwise Contact Owner Or Sudo Users For Clone.**""",
         reply_markup=InlineKeyboardMarkup(
             [
