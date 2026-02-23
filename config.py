@@ -26,10 +26,6 @@ LOGGER_ID = int(getenv("LOGGER_ID", None))
 LOG = bool(getenv("LOG", True))
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 900))
 
-# --- EXTERNAL APIs ---
-API_URL = getenv("API_URL", 'https://api.thequickearn.xyz')
-VIDEO_API_URL = getenv("VIDEO_API_URL", 'https://api.video.thequickearn.xyz')
-API_KEY = getenv("API_KEY", 'NxGBNexGenBots6c30dd')
 
 # --- DEPLOYMENT TOOLS ---
 HEROKU_APP_NAME = getenv("HEROKU_APP_NAME")
