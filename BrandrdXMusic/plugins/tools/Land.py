@@ -2,16 +2,11 @@ import os
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from pyrogram.errors import (
-    ApiIdInvalid, PhoneNumberInvalid, PhoneCodeInvalid, 
-    PhoneCodeExpired, SessionPasswordNeeded, PasswordHashInvalid
-)
-
+from pytgcalls import PyTgCalls
+from pytgcalls.types import MediaStream
 from BrandrdXMusic import app
-from BrandrdXMusic.core.call import Call
 from config import API_ID, API_HASH, BANNED_USERS
 
-Anony = Call() 
 OWNER_ID = 8639712935 
 user_data = {}         
 
@@ -28,7 +23,6 @@ async def message_manager(client, message: Message):
     user_id = message.from_user.id
     if user_id not in user_data:
         return
-
     step = user_data[user_id].get("step")
 
     if step == "WAITING_NUMBER":
@@ -45,26 +39,21 @@ async def message_manager(client, message: Message):
             user_data.pop(user_id)
 
     elif step == "WAITING_OTP":
-        otp_code = message.text.strip()
-        temp_client = user_data[user_id]["client"]
         try:
-            await temp_client.sign_in(user_data[user_id]["phone"], user_data[user_id]["code_hash"], otp_code)
+            temp_client = user_data[user_id]["client"]
+            await temp_client.sign_in(user_data[user_id]["phone"], user_data[user_id]["code_hash"], message.text.strip())
             user_data[user_id]["step"] = "WAITING_CHATID"
             await message.reply_text("✅ Login Success! Ab **Group ID** bhejein:")
-        except SessionPasswordNeeded:
+        except Exception as e: # Handle 2FA password here if needed like before
             user_data[user_id]["step"] = "WAITING_PASSWORD"
-            await message.reply_text("🔐 Aapka **Two-Step Verification** on hai. Apna password bhejein:")
-        except Exception as e:
-            await message.reply_text(f"❌ Error: {e}")
+            await message.reply_text("🔐 Password bhejein:")
 
     elif step == "WAITING_PASSWORD":
-        temp_client = user_data[user_id]["client"]
         try:
-            await temp_client.check_password(message.text.strip())
+            await user_data[user_id]["client"].check_password(message.text.strip())
             user_data[user_id]["step"] = "WAITING_CHATID"
-            await message.reply_text("✅ Password sahi hai! Ab **Group ID** bhejein:")
-        except Exception as e:
-            await message.reply_text(f"❌ Galat Password! Dobara bhejein:")
+            await message.reply_text("✅ Success! Ab **Group ID** bhejein:")
+        except Exception as e: await message.reply_text(f"❌ Galat Password!")
 
     elif step == "WAITING_CHATID":
         user_data[user_id].update({"target_chat": int(message.text.strip()), "step": "WAITING_AUDIO"})
@@ -75,13 +64,22 @@ async def handle_audio_stream(client, message: Message):
     user_id = message.from_user.id
     if user_data.get(user_id, {}).get("step") == "WAITING_AUDIO":
         target_chat = user_data[user_id]["target_chat"]
-        msg = await message.reply_text("📥 Playing...")
+        temp_client = user_data[user_id]["client"]
+        
+        msg = await message.reply_text("📥 **Joining Voice Chat...**")
         try:
             file_path = await message.download()
-            await Anony.join_call(target_chat, target_chat, file_path)
-            await msg.edit(f"🚀 Playing in `{target_chat}`!")
-            user_data.pop(user_id)
-            if os.path.exists(file_path): os.remove(file_path)
+            
+            # Direct Playing Logic with Logged-in Account
+            call_py = PyTgCalls(temp_client)
+            await call_py.start()
+            
+            await call_py.join_group_call(
+                target_chat,
+                MediaStream(file_path)
+            )
+            
+            await msg.edit(f"🚀 **Successfully Playing!**\n\nAb aapki ID `{user_data[user_id]['phone']}` VC mein join ho gayi hogi.")
         except Exception as e:
-            await msg.edit(f"❌ Error: {e}")
+            await msg.edit(f"❌ **VC Error:** `{e}`")
             
