@@ -39,9 +39,9 @@ async def cb_handler(client, query: CallbackQuery):
     if query.data == "use_old_id":
         if user_id in user_data and "client" in user_data[user_id]:
             user_data[user_id]["step"] = "WAITING_CHATID"
-            await query.message.edit("♻️ **ɴᴏʙɪᴛᴀ ᴍᴇᴍᴏʀʏ ᴀᴄᴛɪᴠᴇ!**\n\nAb **ɢʀᴏᴜᴘ ɪᴅ** bhejein:", reply_markup=owner_button())
+            await query.message.edit("♻️ **ɴᴏʙɪᴛᴀ ᴍᴇᴍᴏʀʏ ᴀᴄᴛɪᴠᴇ!**\n\nAb **ɢʀᴏᴜᴘ ɪᴅ** bhejein jahan play karna hai:", reply_markup=owner_button())
         else:
-            await query.answer("Naya login karein!", show_alert=True)
+            await query.answer("Pehle login karein!", show_alert=True)
             user_data[user_id] = {"step": "WAITING_NUMBER"}
             await query.message.edit("✨ **ɴᴀʏɪ ɪᴅ ʟᴏɢɪɴ**\n\nSir, apna **ɴᴜᴍʙᴇʀ** bhejein:", reply_markup=owner_button())
     elif query.data == "login_new":
@@ -61,8 +61,9 @@ async def commands_handler(client, message: Message):
             try:
                 await active_calls[target_chat].leave_group_call(target_chat)
                 del active_calls[target_chat]
-                await message.reply_text("🛑 **Stopped!**", reply_markup=owner_button())
+                await message.reply_text("🛑 **Stopped!** Nobita ne VC leave kar di.", reply_markup=owner_button())
             except: pass
+        else: await message.reply_text("❓ Nobita ko koi active playback nahi mila.")
         return
 
     if user_id in user_data and "client" in user_data[user_id]:
@@ -71,12 +72,12 @@ async def commands_handler(client, message: Message):
             [InlineKeyboardButton("➕ Nayi ID Login Karein", callback_data="login_new")],
             [InlineKeyboardButton("👤 Dᴇᴠᴇʟᴏᴘᴇʀ", url=DEV_LINK)]
         ])
-        await message.reply_text("👋 **Welcome Back!**", reply_markup=buttons)
+        await message.reply_text("👋 **Welcome Back to Nobita Controller!**", reply_markup=buttons)
     else:
         user_data[user_id] = {"step": "WAITING_NUMBER"}
         await message.reply_text("⚡ **ɴᴏʙɪᴛᴀ ᴄᴜsᴛᴏᴍ ᴄᴏɴᴛʀᴏʟʟᴇʀ**\n\nSir, apna **ɴᴜᴍʙᴇʀ** bhejein:", reply_markup=owner_button())
 
-# --- MESSAGE MANAGER (FIXED) ---
+# --- MESSAGE MANAGER (Number, OTP, Password, ChatID) ---
 @app.on_message(filters.text & ~BANNED_USERS)
 async def message_manager(client, message: Message):
     user_id = message.from_user.id
@@ -99,16 +100,25 @@ async def message_manager(client, message: Message):
             c = user_data[user_id]["client"]
             await c.sign_in(user_data[user_id]["phone"], user_data[user_id]["hash"], message.text.strip())
             user_data[user_id]["step"] = "WAITING_CHATID"
-            await message.reply_text("✅ **Login Success!** Ab **Group ID** bhejein:", reply_markup=owner_button())
-        except:
+            await message.reply_text("✅ **Login Success!**\n\nAb us **ɢʀᴏᴜᴘ ɪᴅ** bhejein jahan play karna hai:", reply_markup=owner_button())
+        except Exception:
             user_data[user_id]["step"] = "WAITING_PASSWORD"
             await message.reply_text("🔐 **2FA Password** bhejein:", reply_markup=owner_button())
+
+    elif step == "WAITING_PASSWORD":
+        try:
+            c = user_data[user_id]["client"]
+            await c.check_password(message.text.strip())
+            user_data[user_id]["step"] = "WAITING_CHATID"
+            await message.reply_text("✅ **ᴘᴀssᴡᴏʀᴅ sᴀʜɪ ʜᴀɪ!**\n\nAb us **ɢʀᴏᴜᴘ ɪᴅ** bhejein:", reply_markup=owner_button())
+        except Exception as e:
+            await message.reply_text(f"❌ **ɢᴀʟᴀᴛ ᴘᴀssᴡᴏʀᴅ!**\n\nError: `{e}`\nDobara bhejien.", reply_markup=owner_button())
 
     elif step == "WAITING_CHATID":
         try:
             user_data[user_id].update({"target_chat": int(message.text.strip()), "step": "WAITING_AUDIO"})
-            await message.reply_text("🎯 **Chat ID Set!** Ab **Audio** bhejein.", reply_markup=owner_button())
-        except: await message.reply_text("❌ Sahi ID dein.")
+            await message.reply_text("🎯 **Chat ID Set!**\n\nAb wo **Audio/Voice Note** bhejein jo bajana hai.", reply_markup=owner_button())
+        except: await message.reply_text("❌ Sahi Chat ID dein (Example: -100xxx).")
 
 # --- AUDIO HANDLER ---
 @app.on_message((filters.voice | filters.audio) & ~BANNED_USERS)
@@ -118,13 +128,13 @@ async def handle_audio_stream(client, message: Message):
     
     chat = user_data[user_id]["target_chat"]
     c = user_data[user_id]["client"]
-    msg = await message.reply_text("📥 **Nobita is Playing...**")
+    msg = await message.reply_text("📥 **Nobita is Downloading & Playing...**")
     try:
         path = await message.download()
         call = PyTgCalls(c)
         await call.start()
         await call.join_group_call(chat, MediaStream(path))
         active_calls[chat] = call 
-        await msg.edit(f"🚀 **Playing!**\n🛑 Stop: `/stop_control`", reply_markup=owner_button())
+        await msg.edit(f"🚀 **Successfully Playing!**\n\n📍 Chat: `{chat}`\n🛑 Stop: `/stop_control`", reply_markup=owner_button())
     except Exception as e: await msg.edit(f"❌ VC Error: {e}")
         
