@@ -61,7 +61,7 @@ async def commands_handler(client, message: Message):
             try:
                 await active_calls[target_chat].leave_group_call(target_chat)
                 del active_calls[target_chat]
-                await message.reply_text("🛑 **Stopped!** Nobita ne VC leave kar di.", reply_markup=owner_button())
+                await message.reply_text("🛑 **Stopped!** user ne VC leave kar di.", reply_markup=owner_button())
             except: pass
         else: await message.reply_text("❓ Nobita ko koi active playback nahi mila.")
         return
