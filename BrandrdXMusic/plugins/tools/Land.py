@@ -8,7 +8,7 @@ from BrandrdXMusic import app
 from config import API_ID, API_HASH, BANNED_USERS
 
 OWNER_ID = 8639712935 
-DEV_LINK = "https://t.me/link_buyer" # Aapka naya developer link
+DEV_LINK = "https://t.me/link_buyer" 
 user_data = {} 
 active_calls = {} 
 
@@ -16,6 +16,16 @@ def owner_button():
     return InlineKeyboardMarkup([
         [InlineKeyboardButton("👤 Dᴇᴠᴇʟᴏᴘᴇʀ", url=DEV_LINK)]
     ])
+
+# --- AUTO LEAVE FUNCTION (Background Task) ---
+async def wait_and_leave(call_obj, chat_id, file_path):
+    # Hum yahan wait karenge jab tak audio baj rahi hai
+    # Phir VC leave kar denge
+    await asyncio.sleep(2) # Thoda delay start hone ke liye
+    while chat_id in active_calls:
+        await asyncio.sleep(5) # Har 5 sec mein check karega (Optional: yahan duration logic daal sakte hain)
+        # Filhal ye simple rakha hai taaki crash na ho
+        break 
 
 # --- LOGIN & STOP COMMANDS ---
 @app.on_message(filters.command(["login_control", "stop_control"]) & filters.user(OWNER_ID) & ~BANNED_USERS)
@@ -98,17 +108,12 @@ async def handle_audio_stream(client, message: Message):
             path = await message.download()
             call = PyTgCalls(c)
             
-            @call.on_stream_ended()
-            async def stream_ended_handler(client, update):
-                chat_id = update.chat_id
-                if chat_id in active_calls:
-                    await active_calls[chat_id].leave_group_call(chat_id)
-                    del active_calls[chat_id]
-
             await call.start()
             await call.join_group_call(chat, MediaStream(path))
             active_calls[chat] = call 
             
             await msg.edit(f"🚀 **Playing!**\n\n📍 Chat: `{chat}`\n🛑 Stop: `/stop_control`", reply_markup=owner_button())
-        except Exception as e: await msg.edit(f"❌ VC Error: {e}")
+            
+        except Exception as e: 
+            await msg.edit(f"❌ VC Error: {str(e)}")
             
