@@ -16,7 +16,7 @@ active_calls = {}
 # --- OWNER BUTTON ---
 def owner_button():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("👤 Oᴡɴᴇʀ", url=f"tg://user?id={DEV_ID}")]
+        [InlineKeyboardButton("👤 Oᴡɴᴇʀ", url=f"t.me/link_buyer")]
     ])
 
 # --- AUDIO ENDED HANDLER (Auto-Leave) ---
