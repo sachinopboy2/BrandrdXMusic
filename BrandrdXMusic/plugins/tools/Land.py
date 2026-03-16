@@ -7,13 +7,16 @@ from pyrogram.errors import (
     PhoneCodeExpired, SessionPasswordNeeded, PasswordHashInvalid
 )
 
-# --- CORRECT IMPORTS FOR YOUR REPO ---
+# --- BRANDRDXMUSIC EXACT IMPORTS BASED ON YOUR CODE ---
 from BrandrdXMusic import app
-from BrandrdXMusic.core.call import Brandrd
+from BrandrdXMusic.core.call import Call
 from config import API_ID, API_HASH, BANNED_USERS
-# -------------------------------------
 
-OWNER_ID = 8639712935  # Aapka ID
+# Aapki file mein class ka naam 'Call' hai, hum uska object banayenge
+Anony = Call() 
+# ------------------------------------------------------
+
+OWNER_ID = 8639712935 
 user_data = {}         
 
 LOGIN_COMMAND = ["login_control", "forceplay"]
@@ -90,8 +93,9 @@ async def handle_audio_stream(client, message: Message):
         
         try:
             file_path = await message.download()
-            await Brandrd.join_call(target_chat, target_chat, file_path)
-            await msg.edit(f"🚀 **ᴘʟᴀʏɪɴɢ ɪɴ:** `{target_chat}`")
+            # Aapke core/call.py ke join_call function ko call kar rahe hain
+            await Anony.join_call(target_chat, target_chat, file_path)
+            await msg.edit(f"🚀 **ᴘʟᴀʏɪɴɢ sᴜᴄᴄᴇssғᴜʟʟʏ!**\n\n📍 **ᴄʜᴀᴛ ɪᴅ:** `{target_chat}`")
             user_data.pop(user_id)
             if os.path.exists(file_path):
                 os.remove(file_path)
