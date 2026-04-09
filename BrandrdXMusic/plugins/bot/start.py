@@ -31,17 +31,17 @@ async def start_pm(client, message: Message, _):
     
     # --- Premium Intro Animation ---
     msg = await message.reply_text(
-        "<tg-emoji emoji-id='5431466070141312213'>🚀</tg-emoji> <b>ɪɴɪᴛɪᴀʟɪᴢɪɴɢ sʏsᴛᴇᴍs...</b>",
+        "🚀 <b>ɪɴɪᴛɪᴀʟɪᴢɪɴɢ sʏsᴛᴇᴍs...</b>",
         parse_mode=enums.ParseMode.HTML
     )
     await asyncio.sleep(0.5)
     await msg.edit_text(
-        "<tg-emoji emoji-id='5451950202533226415'>🛰️</tg-emoji> <b>ᴄᴏɴɴᴇᴄᴛɪɴɢ ᴛᴏ sᴛᴀʀᴋ sᴀᴛᴇʟʟɪᴛᴇ...</b>",
+        "🛰️ <b>ᴄᴏɴɴᴇᴄᴛɪɴɢ ᴛᴏ sᴛᴀʀᴋ sᴀᴛᴇʟʟɪᴛᴇ...</b>",
         parse_mode=enums.ParseMode.HTML
     )
     await asyncio.sleep(0.5)
     await msg.edit_text(
-        "<tg-emoji emoji-id='5431189445893952416'>🔋</tg-emoji> <b>ᴘᴏᴡᴇʀ: 100% [||||||||||]</b>",
+        "🔋 <b>ᴘᴏᴡᴇʀ: 100% [||||||||||]</b>",
         parse_mode=enums.ParseMode.HTML
     )
     await asyncio.sleep(0.5)
@@ -52,7 +52,7 @@ async def start_pm(client, message: Message, _):
             if message.from_user.id != OWNER_ID:
                 await msg.delete()
                 return await message.reply_text(
-                    "❌ <tg-emoji emoji-id='5465665476981726609'>🚫</tg-emoji> <b>ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ.</b>\n\nᴊᴀᴋᴀʀ ɴᴏʙɪᴛᴀ ᴘᴀᴘᴀ sᴇ sᴜᴅᴏ ᴍᴀɴɢ 😂",
+                    "🚫 <b>ᴀᴄᴄᴇss ᴅᴇɴɪᴇᴅ.</b>\n\nᴊᴀᴋᴀʀ ɴᴏʙɪᴛᴀ ᴘᴀᴘᴀ sᴇ sᴜᴅᴏ ᴍᴀɴɢ 😂",
                     parse_mode=enums.ParseMode.HTML
                 )
             await msg.edit_text("🔓 <b>ᴀᴄᴄᴇss ɢʀᴀɴᴛᴇᴅ, ᴅɪʀᴇᴄᴛᴏʀ.</b>")
@@ -62,21 +62,20 @@ async def start_pm(client, message: Message, _):
     
     # --- Premium Welcome UI ---
     welcome_text = (
-        f"<tg-emoji emoji-id='5431345719335984631'>⚡</tg-emoji> <b>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴛʜᴇ ᴍᴜʟᴛɪᴠᴇʀsᴇ, {message.from_user.mention}!</b>\n\n"
+        f"⚡ <b>ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴛʜᴇ ᴍᴜʟᴛɪᴠᴇʀsᴇ, {message.from_user.mention}!</b>\n\n"
         f"ɪ ᴀᴍ <b>{app.mention}</b>, ʏᴏᴜʀ ᴘᴇʀsᴏɴᴀʟ <b>sᴛᴀʀᴋ-ᴛᴇᴄʜ</b> ᴍᴜsɪᴄ sʏsᴛᴇᴍ.\n\n"
-        f"<tg-emoji emoji-id='5341595183359533355'>🛡️</tg-emoji> <b>sʏsᴛᴇᴍ sᴛᴀᴛᴜs:</b> <code>ᴏɴʟɪɴᴇ</code>\n"
-        f"<tg-emoji emoji-id='5424722881258728340'>🧬</tg-emoji> <b>ᴘʀᴏᴛᴏᴄᴏʟ:</b> <code>ᴀᴅᴠᴀɴᴄᴇᴅ ᴍᴜsɪᴄ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ</code>"
+        f"🛡️ <b>sʏsᴛᴇᴍ sᴛᴀᴛᴜs:</b> <code>ᴏɴʟɪɴᴇ</code>\n"
+        f"🧬 <b>ᴘʀᴏᴛᴏᴄᴏʟ:</b> <code>ᴀᴅᴠᴀɴᴄᴇᴅ ᴍᴜsɪᴄ ɪɴᴛᴇɢʀᴀᴛɪᴏɴ</code>"
     )
 
     try:
         photo = config.START_IMG_URL
-        # FIX: Yahan se InlineKeyboardMarkup hata diya kyunki private_panel pehle se hi Markup hai
         out = private_panel(_) 
         await message.reply_photo(
             photo=photo,
             caption=welcome_text,
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=out, # <--- Changed
+            reply_markup=out, 
         )
         
         if await is_on_off(config.LOG):
@@ -92,12 +91,21 @@ async def start_pm(client, message: Message, _):
 @LanguageStart
 async def start_gp(client, message: Message, _):
     uptime = get_readable_time(int(time.time() - _boot_))
-    # FIX: Yahan bhi Markup hata diya
     out = start_panel(_)
     await message.reply_photo(
         photo=config.START_IMG_URL,
-        caption=f"<tg-emoji emoji-id='5424911048624584210'>🌌</tg-emoji> <b>ᴍᴜʟᴛɪᴠᴇʀsᴇ ᴍᴜsɪᴄ ᴇɴɢɪɴᴇ ᴀᴄᴛɪᴠᴇ!</b>\n\n⚡ <b>ᴜᴘᴛɪᴍᴇ:</b> <code>{uptime}</code>\nʀᴇᴀᴅʏ ᴛᴏ ʙʟᴀsᴛ sᴏᴍᴇ ᴛᴜɴᴇs ɪɴ <b>{message.chat.title}</b>?",
+        caption=f"🌌 <b>ᴍᴜʟᴛɪᴠᴇʀsᴇ ᴍᴜsɪᴄ ᴇɴɢɪɴᴇ ᴀᴄᴛɪᴠᴇ!</b>\n\n⚡ <b>ᴜᴘᴛɪᴍᴇ:</b> <code>{uptime}</code>\nʀᴇᴀᴅʏ ᴛᴏ ʙʟᴀsᴛ sᴏᴍᴇ ᴛᴜɴᴇs ɪɴ <b>{message.chat.title}</b>?",
         parse_mode=enums.ParseMode.HTML,
-        reply_markup=out, # <--- Changed
+        reply_markup=out,
     )
     return await add_served_chat(message.chat.id)
+
+@app.on_message(filters.new_chat_members, group=-1)
+async def welcome(client, message: Message):
+    for member in message.new_chat_members:
+        if member.id == app.id:
+            if message.chat.type != ChatType.SUPERGROUP:
+                await message.reply_text("⚠️ <b>ᴘʀᴏᴛᴏᴄᴏʟ ᴇʀʀᴏʀ:</b> ᴏɴʟʏ sᴜᴘᴇʀɢʀᴏᴜᴘs ᴀʀᴇ sᴜᴘᴘᴏʀᴛᴇᴅ.")
+                return await app.leave_chat(message.chat.id)
+            await add_served_chat(message.chat.id)
+            await message.reply_text("💥 <b>ᴀᴠᴇɴɢᴇʀs ᴀssᴇᴍʙʟᴇ!</b> ᴍᴜsɪᴄ ᴇɴɢɪɴᴇ ʀᴇᴀᴅʏ.", parse_mode=enums.ParseMode.HTML)
