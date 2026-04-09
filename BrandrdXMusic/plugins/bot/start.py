@@ -70,12 +70,13 @@ async def start_pm(client, message: Message, _):
 
     try:
         photo = config.START_IMG_URL
-        out = private_panel(_)
+        # FIX: Yahan se InlineKeyboardMarkup hata diya kyunki private_panel pehle se hi Markup hai
+        out = private_panel(_) 
         await message.reply_photo(
             photo=photo,
             caption=welcome_text,
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(out),
+            reply_markup=out, # <--- Changed
         )
         
         if await is_on_off(config.LOG):
@@ -85,27 +86,18 @@ async def start_pm(client, message: Message, _):
                 parse_mode=enums.ParseMode.HTML
             )
     except Exception:
-        await message.reply_text(welcome_text, parse_mode=enums.ParseMode.HTML, reply_markup=InlineKeyboardMarkup(out))
+        await message.reply_text(welcome_text, parse_mode=enums.ParseMode.HTML, reply_markup=out)
 
 @app.on_message(filters.command(["start"]) & filters.group & ~BANNED_USERS)
 @LanguageStart
 async def start_gp(client, message: Message, _):
     uptime = get_readable_time(int(time.time() - _boot_))
+    # FIX: Yahan bhi Markup hata diya
+    out = start_panel(_)
     await message.reply_photo(
         photo=config.START_IMG_URL,
         caption=f"<tg-emoji emoji-id='5424911048624584210'>🌌</tg-emoji> <b>ᴍᴜʟᴛɪᴠᴇʀsᴇ ᴍᴜsɪᴄ ᴇɴɢɪɴᴇ ᴀᴄᴛɪᴠᴇ!</b>\n\n⚡ <b>ᴜᴘᴛɪᴍᴇ:</b> <code>{uptime}</code>\nʀᴇᴀᴅʏ ᴛᴏ ʙʟᴀsᴛ sᴏᴍᴇ ᴛᴜɴᴇs ɪɴ <b>{message.chat.title}</b>?",
         parse_mode=enums.ParseMode.HTML,
-        reply_markup=InlineKeyboardMarkup(start_panel(_)),
+        reply_markup=out, # <--- Changed
     )
     return await add_served_chat(message.chat.id)
-
-@app.on_message(filters.new_chat_members, group=-1)
-async def welcome(client, message: Message):
-    for member in message.new_chat_members:
-        if member.id == app.id:
-            if message.chat.type != ChatType.SUPERGROUP:
-                await message.reply_text("⚠️ <b>ᴘʀᴏᴛᴏᴄᴏʟ ᴇʀʀᴏʀ:</b> ᴏɴʟʏ sᴜᴘᴇʀɢʀᴏᴜᴘs ᴀʀᴇ sᴜᴘᴘᴏʀᴛᴇᴅ.")
-                return await app.leave_chat(message.chat.id)
-            await add_served_chat(message.chat.id)
-            await message.reply_text("<tg-emoji emoji-id='5431195617711621213'>💥</tg-emoji> <b>ᴀᴠᴇɴɢᴇʀs ᴀssᴇᴍʙʟᴇ!</b> ᴍᴜsɪᴄ ᴇɴɢɪɴᴇ ʀᴇᴀᴅʏ.", parse_mode=enums.ParseMode.HTML)
-            
